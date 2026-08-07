@@ -7,6 +7,7 @@
     type="button"
     role="switch"
     aria-checked={checked}
+    aria-label={label || 'Toggle'}
     class="relative h-5 w-9 rounded-full transition-colors {checked
       ? 'bg-[var(--accent)]'
       : 'bg-[var(--border)]'}"

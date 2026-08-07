@@ -1,11 +1,10 @@
 <script>
-  import { LineChart, AreaChart } from 'layerchart'
+  import { AreaChart } from 'layerchart'
   import { formatCompact, formatMonth } from '../../utils/formatting.js'
 
   let {
     data = [],
     height = 280,
-    onBrush = null,
   } = $props()
 
   const series = [

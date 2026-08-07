@@ -12,8 +12,9 @@
     spark = null,
   } = $props()
 
-  const statusColor =
-    status === 'Growing' ? '#1a7a4c' : status === 'Weak' ? 'var(--negative)' : 'var(--text-muted)'
+  let statusColor = $derived(
+    status === 'Growing' ? '#1a7a4c' : status === 'Weak' ? 'var(--negative)' : 'var(--text-muted)',
+  )
 </script>
 
 <button

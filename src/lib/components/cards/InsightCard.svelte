@@ -1,5 +1,5 @@
 <script>
-  import Button from './Button.svelte'
+  import Button from '../ui/Button.svelte'
 
   let {
     title,
@@ -16,11 +16,6 @@
 <div class="card flex flex-col gap-2 p-4">
   <div class="flex items-start justify-between gap-2">
     <div class="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{title}</div>
-    {#if accent}
-      <span class="rounded px-1.5 py-0.5 text-[10px] font-medium" style="background:{accent}22;color:{accent}">
-        {@html ''}
-      </span>
-    {/if}
   </div>
   <div class="mono text-xl font-semibold text-[var(--text-h)]">{value}</div>
   {#if subtitle}

@@ -1,43 +1,60 @@
-# Svelte + Vite
+# Revenue Analysis
 
-This template should help get you started developing with Svelte in Vite.
+Interactive single-page tool for deep analysis of a static longitudinal revenue dataset. Built for product managers and analysts to explore revenue composition, geography, segments, product performance, engagement, and opportunity gaps.
 
-## Recommended IDE Setup
+## Stack
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+- **Vite** + **Svelte 5** (runes & snippets)
+- **Tailwind CSS 4**
+- **LayerChart 2** for visualizations
+- **PapaParse** (CSV), **date-fns**, **@lucide/svelte**
+- Static hosting on **Cloudflare Pages** (no backend)
 
-## Need an official Svelte framework?
+## Specs
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+- [Functional & UI/UX specification](./revenue-analysis-tool.md)
+- [Technical implementation specification](./technical-implementation-specification.md)
 
-## Technical considerations
+## Dataset
 
-**Why use this over SvelteKit?**
+Place the revenue CSV at [`public/revenue-data.csv`](./public/revenue-data.csv) (already included). Vite serves it at `/revenue-data.csv`. The file is ~17 MB and under Cloudflare Pages’ 25 MiB per-file free-tier limit.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+## Local development
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install
+npm run dev
 ```
+
+Open the URL Vite prints (typically `http://localhost:5173`). On first load the app parses and enriches ~170k rows in the browser (worker parse + main-thread enrichment).
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+Output is a pure static site in `dist/` (including the CSV).
+
+## Deploy (Cloudflare Pages)
+
+1. Push this repository to GitHub.
+2. In Cloudflare Pages, create a project connected to the repo.
+3. Build settings:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+4. Every push to `main` triggers a global CDN deploy.
+
+No R2, Workers, or environment variables are required.
+
+## Usage notes
+
+- All filters live in one global state; every view reacts instantly.
+- Use **Focus on this segment** actions and chart clicks to drill into the data.
+- Enable **Compare** in the top bar for period-over-period waterfall attribution.
+- Open the info icon in the top bar for the data-quality summary (missing DOB, negatives, tenure distribution).
+
+## Non-goals
+
+No TypeScript, SvelteKit/SSR, backend, authentication, test suites, PWA, or i18n — this is a bare-bones analytical showcase.

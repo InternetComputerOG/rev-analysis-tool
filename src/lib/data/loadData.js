@@ -24,36 +24,46 @@ import {
 export function loadRevenueData(onProgress = () => {}) {
   return new Promise((resolve, reject) => {
     onProgress('Fetching CSV…')
+
     fetch('/revenue-data.csv')
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to fetch CSV (${res.status})`)
+        onProgress('Parsing…')
         return res.text()
       })
       .then((csvText) => {
-        onProgress('Parsing…')
+        // PapaParse worker:true hangs under Vite (never fires complete/error)
         Papa.parse(csvText, {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,
-          worker: true,
+          worker: false,
           complete: (results) => {
             try {
+              if (results.errors?.length && !results.data?.length) {
+                reject(new Error(results.errors[0]?.message || 'CSV parse produced no rows'))
+                return
+              }
               onProgress('Enriching…')
-              const enriched = enrichRows(results.data)
-              resolve(enriched)
+              setTimeout(() => {
+                try {
+                  resolve(enrichRows(results.data))
+                } catch (err) {
+                  reject(err)
+                }
+              }, 0)
             } catch (err) {
               reject(err)
             }
           },
-          error: (err) => reject(err),
+          error: (err) => reject(err instanceof Error ? err : new Error(String(err))),
         })
       })
-      .catch(reject)
+      .catch((err) => reject(err instanceof Error ? err : new Error(String(err))))
   })
 }
 
 function enrichRows(rawRows) {
-  // Pass A — account index
   const accountIndex = new Map()
   for (const raw of rawRows) {
     const id = raw.account_id
@@ -88,7 +98,6 @@ function enrichRows(rawRows) {
     }
   }
 
-  // Pass B — enrich rows
   const rows = []
   let maxMonthTs = -Infinity
   const negativeByStream = Object.fromEntries(
@@ -134,7 +143,6 @@ function enrichRows(rawRows) {
       cash_interest_revenue: num(raw.cash_interest_revenue),
       retail_options_pfof_revenue: num(raw.retail_options_pfof_revenue),
       fdic_sweep_alpaca_revenue: num(raw.fdic_sweep_alpaca_revenue),
-      // derived
       tradeMonthDate,
       tradeMonthTs: ts,
       age,
