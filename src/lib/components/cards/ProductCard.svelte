@@ -19,8 +19,8 @@
 
 <button
   type="button"
-  class="card relative flex w-full flex-col gap-2 p-3 text-left transition-[transform,box-shadow] duration-150 ease-out hover:shadow-[var(--shadow-lg)] {selected
-    ? 'z-10 -translate-y-1 shadow-[0_3px_5px_rgba(18,22,29,0.2),0_6px_10px_rgba(18,22,29,0.14),0_1px_18px_rgba(18,22,29,0.12)]'
+  class="card product-card relative flex w-full flex-col gap-2 p-3 text-left {selected
+    ? 'product-card--selected'
     : ''}"
   style="border-top: 3px solid {color}"
   {onclick}
@@ -39,3 +39,25 @@
   {/if}
   <div class="text-[10px] text-[var(--text-muted)]">Top: {topSegment}</div>
 </button>
+
+<style>
+  .product-card {
+    transition:
+      transform 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+
+  .product-card:hover:not(.product-card--selected) {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Must beat unlayered .card { box-shadow } from app.css */
+  .product-card.product-card--selected {
+    z-index: 10;
+    transform: translateY(-4px);
+    box-shadow:
+      0 3px 5px rgba(18, 22, 29, 0.2),
+      0 6px 10px rgba(18, 22, 29, 0.14),
+      0 1px 18px rgba(18, 22, 29, 0.12);
+  }
+</style>

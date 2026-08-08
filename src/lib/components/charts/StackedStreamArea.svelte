@@ -25,7 +25,7 @@
         })),
   )
 
-  let bottomPadding = $derived(groupBy === 'stream' ? 72 : 36)
+  let bottomPadding = $derived(groupBy === 'stream' ? 72 : 56)
   // Area charts degenerate with a single point — fall back to stacked bars.
   let useBar = $derived(mode === 'bar' || data.length === 1)
   let legend = {
