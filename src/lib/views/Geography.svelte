@@ -12,8 +12,8 @@
 
   let geo = $derived(usaNonUsa(rows))
   let rollup = $derived(countryRollup(rows))
-  let colorMode = $state('arpa')
-  let selectedCountry = $state(null)
+  let colorMode = $state('growth')
+  let selectedCountry = $state('usa')
 
   let countryRows = $derived(
     selectedCountry ? rows.filter((r) => r.country_of_tax_residence === selectedCountry) : [],

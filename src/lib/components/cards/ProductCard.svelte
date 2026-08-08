@@ -19,8 +19,8 @@
 
 <button
   type="button"
-  class="card flex w-full flex-col gap-2 p-3 text-left transition-shadow hover:shadow-[var(--shadow-lg)] {selected
-    ? 'ring-2 ring-[var(--accent)]'
+  class="card relative flex w-full flex-col gap-2 p-3 text-left transition-[transform,box-shadow] duration-150 ease-out hover:shadow-[var(--shadow-lg)] {selected
+    ? 'z-10 -translate-y-1 shadow-[0_3px_5px_rgba(18,22,29,0.2),0_6px_10px_rgba(18,22,29,0.14),0_1px_18px_rgba(18,22,29,0.12)]'
     : ''}"
   style="border-top: 3px solid {color}"
   {onclick}
