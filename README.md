@@ -8,7 +8,7 @@ Interactive single-page tool for deep analysis of a static longitudinal revenue 
 - **Tailwind CSS 4**
 - **LayerChart 2** for visualizations
 - **PapaParse** (CSV), **date-fns**, **@lucide/svelte**
-- Static hosting on **Cloudflare Pages** (no backend)
+- Static hosting on **Cloudflare** (Workers static assets; no backend)
 
 ## Specs
 
@@ -17,12 +17,13 @@ Interactive single-page tool for deep analysis of a static longitudinal revenue 
 
 ## Dataset
 
-Place the revenue CSV at [`public/revenue-data.csv`](./public/revenue-data.csv) (already included). Vite serves it at `/revenue-data.csv`. The file is ~17 MB and under Cloudflare Pages’ 25 MiB per-file free-tier limit.
+The revenue CSV is **not** stored in this repository. Place it locally at `public/revenue-data.csv` before running `dev`, `build`, or `deploy`. Vite serves it at `/revenue-data.csv`. The file is ~17 MB and under Cloudflare’s 25 MiB per-file free-tier limit.
 
 ## Local development
 
 ```bash
 npm install
+# Ensure public/revenue-data.csv is present
 npm run dev
 ```
 
@@ -35,18 +36,19 @@ npm run build
 npm run preview
 ```
 
-Output is a pure static site in `dist/` (including the CSV).
+Output is a pure static site in `dist/` (including the CSV when present locally).
 
-## Deploy (Cloudflare Pages)
+## Deploy (Wrangler)
 
-1. Push this repository to GitHub.
-2. In Cloudflare Pages, create a project connected to the repo.
-3. Build settings:
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-4. Every push to `main` triggers a global CDN deploy.
+Deploy from a machine that has `public/revenue-data.csv` locally:
 
-No R2, Workers, or environment variables are required.
+```bash
+npm run deploy
+```
+
+This runs `vite build` then `wrangler deploy`. Do **not** connect Cloudflare Pages to GitHub auto-builds for this repo — the CSV is gitignored and would be missing from a remote build.
+
+No R2 or environment variables are required.
 
 ## Usage notes
 
