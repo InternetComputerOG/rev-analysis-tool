@@ -192,6 +192,13 @@ function enrichRows(rawRows) {
 
   const allMonths = [...new Set(rows.map((r) => r.tradeMonthTs))].sort((a, b) => a - b)
 
+  const activeAccountIds = new Set()
+  if (maxMonthTs != null && maxMonthTs !== -Infinity) {
+    for (const r of rows) {
+      if (r.tradeMonthTs === maxMonthTs) activeAccountIds.add(r.account_id)
+    }
+  }
+
   const meta = {
     rowCount: rows.length,
     uniqueAccounts,
@@ -202,6 +209,7 @@ function enrichRows(rawRows) {
     maxMonthTs,
     minMonthTs: allMonths[0] ?? null,
     allMonthTs: allMonths,
+    activeAccountIds,
     countries: [...new Set(rows.map((r) => r.country_of_tax_residence))].sort(),
   }
 

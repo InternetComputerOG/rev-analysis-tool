@@ -34,6 +34,7 @@
     if (range.start == null && range.end == null) return []
     return applyFiltersWithTime(allRows, { ...filters, compareEnabled: false }, range, {
       maxMonthTs: meta.maxMonthTs,
+      activeAccountIds: meta.activeAccountIds,
     })
   })
 

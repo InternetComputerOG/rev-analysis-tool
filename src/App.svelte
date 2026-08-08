@@ -29,7 +29,12 @@
   let suggestions = $state([])
   let chipsOffset = $state(0)
 
-  let filteredRows = $derived(applyFilters(rows, filters, { maxMonthTs: meta?.maxMonthTs }))
+  let filteredRows = $derived(
+    applyFilters(rows, filters, {
+      maxMonthTs: meta?.maxMonthTs,
+      activeAccountIds: meta?.activeAccountIds,
+    }),
+  )
   let summary = $derived(computeSummary(filteredRows))
 
   onMount(() => {

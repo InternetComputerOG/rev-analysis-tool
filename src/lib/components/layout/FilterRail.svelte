@@ -73,6 +73,9 @@
                 {r}
               </label>
             {/each}
+            {#if !filters.regions.length}
+              <p class="mt-1 text-[10px] text-[var(--text-muted)]">Select at least one region</p>
+            {/if}
           </div>
         {/if}
         {#if filters.geoMode === 'country'}
@@ -94,6 +97,9 @@
               </label>
             {/each}
           </div>
+          {#if !filters.countries.length}
+            <p class="mt-1 text-[10px] text-[var(--text-muted)]">Select at least one country</p>
+          {/if}
         {/if}
       </div>
 

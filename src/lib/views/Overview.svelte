@@ -41,7 +41,6 @@
       title="Total revenue"
       value={formatCurrency(growth.total)}
       subtitle="Period growth (last vs prior month): {formatPct(growth.growth)}"
-      onFocus={() => onFilterPatch?.({})}
     />
     <InsightCard
       title="Stock vs Flow"

@@ -3,7 +3,6 @@
   import Chip from '../ui/Chip.svelte'
   import Button from '../ui/Button.svelte'
   import SearchInput from '../ui/SearchInput.svelte'
-  import Toggle from '../ui/Toggle.svelte'
   import { formatMonth } from '../../utils/formatting.js'
   import { describeFilters } from '../../utils/filters.js'
 
@@ -20,31 +19,25 @@
   let chips = $derived(describeFilters(filters))
   let customOpen = $state(false)
 
-  const presets = [
-    { id: 'all', label: 'All' },
-    { id: '3m', label: 'Last 3M' },
-    { id: '6m', label: 'Last 6M' },
-    { id: '12m', label: 'Last 12M' },
-    { id: 'ytd', label: 'YTD' },
-  ]
+  let yearPresets = $derived.by(() => {
+    const years = [
+      ...new Set((meta?.allMonthTs || []).map((t) => new Date(t).getFullYear())),
+    ].sort((a, b) => a - b)
+    return [{ id: 'all', label: 'All' }, ...years.map((y) => ({ id: String(y), label: String(y) }))]
+  })
 
   function applyPreset(id) {
     if (!meta?.allMonthTs?.length) return
     const months = meta.allMonthTs
-    const end = months[months.length - 1]
     if (id === 'all') {
       filters = { ...filters, timeRange: { start: null, end: null } }
       return
     }
-    if (id === 'ytd') {
-      const endDate = new Date(end)
-      const ytdStart = months.find((t) => new Date(t).getFullYear() === endDate.getFullYear()) ?? months[0]
-      filters = { ...filters, timeRange: { start: ytdStart, end } }
-      return
-    }
-    const n = id === '3m' ? 3 : id === '6m' ? 6 : 12
-    const start = months[Math.max(0, months.length - n)]
-    filters = { ...filters, timeRange: { start, end } }
+    const year = Number(id)
+    if (!Number.isFinite(year)) return
+    const inYear = months.filter((t) => new Date(t).getFullYear() === year)
+    if (!inYear.length) return
+    filters = { ...filters, timeRange: { start: inYear[0], end: inYear[inYear.length - 1] } }
   }
 
   function clearChip(id) {
@@ -67,7 +60,6 @@
     if (id === 'search') next.accountQuery = ''
     if (id === 'pinned') next.pinnedAccounts = []
     if (id === 'time') next.timeRange = { start: null, end: null }
-    if (id === 'compare') next.compareEnabled = false
     filters = next
   }
 
@@ -100,7 +92,7 @@
   </div>
 
   <div class="mx-auto flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1.5">
-    {#each presets as p}
+    {#each yearPresets as p}
       <button
         type="button"
         class="rounded-md px-2 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--bg-muted)]"
@@ -118,13 +110,6 @@
     >
       Custom
     </button>
-    <div class="ml-2 flex items-center gap-2 border-l border-[var(--border)] pl-2">
-      <Toggle
-        label="Compare"
-        checked={filters.compareEnabled}
-        onchange={(v) => (filters = { ...filters, compareEnabled: v })}
-      />
-    </div>
   </div>
 
   <div class="flex w-[200px] shrink-0 items-center gap-2">
@@ -181,41 +166,6 @@
         {/each}
       </select>
     </label>
-    {#if filters.compareEnabled}
-      <span class="text-[var(--text-muted)]">vs</span>
-      <label class="flex items-center gap-1">
-        Compare from
-        <select
-          class="rounded border border-[var(--border)] bg-white px-2 py-1"
-          value={filters.compareRange.start ?? ''}
-          onchange={(e) => {
-            const v = e.target.value ? Number(e.target.value) : null
-            filters = { ...filters, compareRange: { ...filters.compareRange, start: v } }
-          }}
-        >
-          <option value="">Start</option>
-          {#each meta.allMonthTs as ts}
-            <option value={ts}>{formatMonth(ts)}</option>
-          {/each}
-        </select>
-      </label>
-      <label class="flex items-center gap-1">
-        to
-        <select
-          class="rounded border border-[var(--border)] bg-white px-2 py-1"
-          value={filters.compareRange.end ?? ''}
-          onchange={(e) => {
-            const v = e.target.value ? Number(e.target.value) : null
-            filters = { ...filters, compareRange: { ...filters.compareRange, end: v } }
-          }}
-        >
-          <option value="">End</option>
-          {#each meta.allMonthTs as ts}
-            <option value={ts}>{formatMonth(ts)}</option>
-          {/each}
-        </select>
-      </label>
-    {/if}
   </div>
 {/if}
 

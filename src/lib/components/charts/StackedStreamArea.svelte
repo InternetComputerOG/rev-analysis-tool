@@ -26,6 +26,8 @@
   )
 
   let bottomPadding = $derived(groupBy === 'stream' ? 72 : 36)
+  // Area charts degenerate with a single point — fall back to stacked bars.
+  let useBar = $derived(mode === 'bar' || data.length === 1)
   let legend = {
     classes: {
       root: 'max-w-full',
@@ -36,7 +38,7 @@
 
 {#if data.length}
   <div class="w-full" style="height:{height}px">
-    {#if mode === 'bar'}
+    {#if useBar}
       <BarChart
         {data}
         x={horizontal ? undefined : 'date'}
@@ -69,6 +71,9 @@
       />
     {/if}
   </div>
+  {#if data.length === 1 && mode === 'area'}
+    <div class="mt-1 text-center text-[10px] text-[var(--text-muted)]">Single month in range</div>
+  {/if}
 {:else}
   <div class="flex h-[200px] items-center justify-center text-sm text-[var(--text-muted)]">No stream data</div>
 {/if}

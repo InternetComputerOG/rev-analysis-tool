@@ -1,5 +1,5 @@
 <script>
-  import { AreaChart } from 'layerchart'
+  import { AreaChart, BarChart } from 'layerchart'
   import { formatCompact, formatMonth } from '../../utils/formatting.js'
 
   let {
@@ -10,32 +10,53 @@
   const series = [
     { key: 'revenue', value: 'revenue', color: 'var(--accent)', label: 'Revenue' },
   ]
+
+  let singleMonth = $derived(data.length === 1)
 </script>
 
 {#if data.length}
   <div class="relative w-full" style="height:{height}px">
-    <AreaChart
-      {data}
-      x="date"
-      y="revenue"
-      {series}
-      {height}
-      padding={{ top: 16, right: 48, bottom: 32, left: 48 }}
-      props={{
-        area: { fillOpacity: 0.15 },
-        xAxis: { format: (d) => formatMonth(d) },
-        yAxis: { format: (d) => formatCompact(d) },
-      }}
-    >
-      {#snippet tooltip()}
-        <!-- LayerChart default tooltip -->
-      {/snippet}
-    </AreaChart>
-    <!-- Active accounts overlay as line using second chart layered conceptually via labels -->
-    <div class="pointer-events-none absolute top-2 right-2 flex gap-3 text-[10px] text-[var(--text-muted)]">
-      <span class="flex items-center gap-1"><span class="inline-block h-2 w-2 rounded-full bg-[var(--accent)]"></span> Revenue</span>
-      <span class="flex items-center gap-1"><span class="inline-block h-0.5 w-3 bg-[#c45c2a]"></span> Active accounts (see table)</span>
-    </div>
+    {#if singleMonth}
+      <BarChart
+        {data}
+        x="date"
+        y="revenue"
+        {series}
+        {height}
+        padding={{ top: 16, right: 48, bottom: 32, left: 48 }}
+        props={{
+          bars: { fill: 'var(--accent)', fillOpacity: 0.85 },
+          xAxis: { format: (d) => formatMonth(d) },
+          yAxis: { format: (d) => formatCompact(d) },
+        }}
+      />
+      <div class="pointer-events-none absolute top-2 right-2 text-[10px] text-[var(--text-muted)]">
+        Single month in range
+      </div>
+    {:else}
+      <AreaChart
+        {data}
+        x="date"
+        y="revenue"
+        {series}
+        {height}
+        padding={{ top: 16, right: 48, bottom: 32, left: 48 }}
+        props={{
+          area: { fillOpacity: 0.15 },
+          xAxis: { format: (d) => formatMonth(d) },
+          yAxis: { format: (d) => formatCompact(d) },
+        }}
+      >
+        {#snippet tooltip()}
+          <!-- LayerChart default tooltip -->
+        {/snippet}
+      </AreaChart>
+      <!-- Active accounts overlay as line using second chart layered conceptually via labels -->
+      <div class="pointer-events-none absolute top-2 right-2 flex gap-3 text-[10px] text-[var(--text-muted)]">
+        <span class="flex items-center gap-1"><span class="inline-block h-2 w-2 rounded-full bg-[var(--accent)]"></span> Revenue</span>
+        <span class="flex items-center gap-1"><span class="inline-block h-0.5 w-3 bg-[#c45c2a]"></span> Active accounts (see table)</span>
+      </div>
+    {/if}
   </div>
   <div class="mt-2 overflow-x-auto">
     <table class="w-full text-[10px] text-[var(--text-muted)]">

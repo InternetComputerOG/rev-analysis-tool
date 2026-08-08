@@ -34,7 +34,7 @@ export function createDefaultFilters() {
 /**
  * @param {object[]} rows
  * @param {ReturnType<typeof createDefaultFilters>} filters
- * @param {{ maxMonthTs?: number }} [ctx]
+ * @param {{ maxMonthTs?: number, activeAccountIds?: Set<string> }} [ctx]
  */
 export function applyFilters(rows, filters, ctx = {}) {
   const {
@@ -62,6 +62,14 @@ export function applyFilters(rows, filters, ctx = {}) {
     .map(([k]) => k)
   const maxMonthTs = ctx.maxMonthTs
 
+  let activeIds = ctx.activeAccountIds
+  if (activeOnly && !activeIds && maxMonthTs != null) {
+    activeIds = new Set()
+    for (const r of rows) {
+      if (r.tradeMonthTs === maxMonthTs) activeIds.add(r.account_id)
+    }
+  }
+
   return rows.filter((row) => {
     if (pinned && pinned.size > 0) {
       if (!pinned.has(row.account_id)) return false
@@ -74,11 +82,12 @@ export function applyFilters(rows, filters, ctx = {}) {
 
     if (geoMode === 'usa' && !row.isUsa) return false
     if (geoMode === 'non_usa' && row.isUsa) return false
-    if (geoMode === 'region' && regionSet) {
-      if (!regionSet.has(row.region)) return false
+    // Region/country mode with empty selection matches nothing (not a silent no-op)
+    if (geoMode === 'region') {
+      if (!regionSet || !regionSet.has(row.region)) return false
     }
-    if (geoMode === 'country' && countrySet) {
-      if (!countrySet.has(row.country_of_tax_residence)) return false
+    if (geoMode === 'country') {
+      if (!countrySet || !countrySet.has(row.country_of_tax_residence)) return false
     }
 
     if (ageSet && !ageSet.has(row.ageBand)) return false
@@ -92,7 +101,9 @@ export function applyFilters(rows, filters, ctx = {}) {
       if ((row[key] || 0) === 0) return false
     }
 
-    if (activeOnly && maxMonthTs != null && row.tradeMonthTs !== maxMonthTs) return false
+    // Active accounts = accounts with a row in the dataset's latest month;
+    // keep their full history (time range still applies below).
+    if (activeOnly && activeIds && !activeIds.has(row.account_id)) return false
 
     if (timeRange?.start != null && row.tradeMonthTs < timeRange.start) return false
     if (timeRange?.end != null && row.tradeMonthTs > timeRange.end) return false
@@ -103,7 +114,7 @@ export function applyFilters(rows, filters, ctx = {}) {
 
 /** Apply filters but force a specific time window (for compare periods). */
 export function applyFiltersWithTime(rows, filters, timeRange, ctx = {}) {
-  return applyFilters(rows, { ...filters, timeRange, activeOnly: false }, ctx)
+  return applyFilters(rows, { ...filters, timeRange }, ctx)
 }
 
 export function describeFilters(filters) {
