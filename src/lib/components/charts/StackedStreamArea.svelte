@@ -24,6 +24,14 @@
           label: s.label,
         })),
   )
+
+  let bottomPadding = $derived(groupBy === 'stream' ? 72 : 36)
+  let legend = {
+    classes: {
+      root: 'max-w-full',
+      items: 'flex-wrap justify-center',
+    },
+  }
 </script>
 
 {#if data.length}
@@ -37,12 +45,12 @@
         {series}
         seriesLayout="stack"
         {height}
-        padding={{ top: 12, right: 12, bottom: 36, left: horizontal ? 72 : 48 }}
+        padding={{ top: 12, right: 12, bottom: bottomPadding, left: horizontal ? 72 : 48 }}
         props={{
           xAxis: { format: (d) => (d instanceof Date ? formatMonth(d) : String(d)) },
           yAxis: { format: (d) => (typeof d === 'number' ? formatCompact(d) : String(d)) },
         }}
-        legend
+        {legend}
       />
     {:else}
       <AreaChart
@@ -51,13 +59,13 @@
         {series}
         seriesLayout="stack"
         {height}
-        padding={{ top: 12, right: 12, bottom: 36, left: 48 }}
+        padding={{ top: 12, right: 12, bottom: bottomPadding, left: 48 }}
         props={{
           area: { fillOpacity: 0.85 },
           xAxis: { format: (d) => formatMonth(d) },
           yAxis: { format: (d) => formatCompact(d) },
         }}
-        legend
+        {legend}
       />
     {/if}
   </div>

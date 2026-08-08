@@ -44,6 +44,13 @@
     }))
     return { data, series, x: 'date' }
   })
+
+  let legend = {
+    classes: {
+      root: 'max-w-full',
+      items: 'flex-wrap justify-center',
+    },
+  }
 </script>
 
 {#if seriesData.data.length}
@@ -53,8 +60,8 @@
       x={seriesData.x}
       series={seriesData.series}
       {height}
-      legend
-      padding={{ top: 8, right: 12, bottom: 32, left: 44 }}
+      {legend}
+      padding={{ top: 8, right: 12, bottom: 72, left: 44 }}
       props={{
         yAxis: { format: (d) => formatPct(d, 0) },
         line: { strokeWidth: 2 },

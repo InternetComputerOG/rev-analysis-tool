@@ -15,7 +15,7 @@
   <aside
     class="fixed top-[var(--bar-height)] bottom-0 left-0 z-10 flex w-[var(--rail-width)] flex-col overflow-y-auto border-r border-[var(--border)] bg-[var(--bg-elevated)]"
   >
-    <div class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3">
+    <div class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3" style="padding-top: calc(var(--bar-height) - 13px);">
       <div class="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Filtered</div>
       <div class="mono mt-1 text-sm font-semibold text-[var(--text-h)]">
         {formatNumber(summary.accountCount)} accounts · {formatCurrency(summary.revenue)}
